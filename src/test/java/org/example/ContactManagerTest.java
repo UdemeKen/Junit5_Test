@@ -118,21 +118,44 @@ class ContactManagerTest {
         assertEquals(1, contactManager.getAllContacts().size());
     }
 
-    @DisplayName("Repeat Contact Creation Test 5 Times")
-    @RepeatedTest(value = 5, name = "Repeating Contact Creation Text {currentRepetition} of {totalRepetitions}")
-    void shouldTextContactCreationRepeatedly() {
-        contactManager.addContact("Aisha", "Moshood", "+809876543");
-        assertFalse(contactManager.getAllContacts().isEmpty());
-        assertEquals(1, contactManager.getAllContacts().size());
+    @Nested
+    class RepeatedNestedTest{
+        @DisplayName("Repeat Contact Creation Test 5 Times")
+        @RepeatedTest(value = 5, name = "Repeating Contact Creation Text {currentRepetition} of {totalRepetitions}")
+        void shouldTextContactCreationRepeatedly() {
+            contactManager.addContact("Aisha", "Moshood", "+809876543");
+            assertFalse(contactManager.getAllContacts().isEmpty());
+            assertEquals(1, contactManager.getAllContacts().size());
+        }
     }
+    @Nested
+    class ParameterizedNestedTest{
+        @DisplayName("Repeat Contact Creation Test 5 Times")
+        @ParameterizedTest
+        @ValueSource(strings = {"+809876543", "+809876543", "+809876543"})
+        void shouldTextContactCreationUsingValueSource(String phoneNumber) {
+            contactManager.addContact("Aisha", "Moshood", phoneNumber);
+            assertFalse(contactManager.getAllContacts().isEmpty());
+            assertEquals(1, contactManager.getAllContacts().size());
+        }
 
-    @DisplayName("Repeat Contact Creation Test 5 Times")
-    @ParameterizedTest
-    @ValueSource(strings = {"+809876543", "+809876543", "+809876543"})
-    void shouldTextContactCreationUsingValueSource(String phoneNumber) {
-        contactManager.addContact("Aisha", "Moshood", phoneNumber);
-        assertFalse(contactManager.getAllContacts().isEmpty());
-        assertEquals(1, contactManager.getAllContacts().size());
+        @DisplayName("CSV Source Case - Phone Number Should Match the Required Format")
+        @ParameterizedTest
+        @CsvSource({"+809876543", "+809876543", "+809876543"})
+        void shouldTextPhoneNumberFormatUsingCSVSource(String phoneNumber) {
+            contactManager.addContact("Aisha", "Moshood", phoneNumber);
+            assertFalse(contactManager.getAllContacts().isEmpty());
+            assertEquals(1, contactManager.getAllContacts().size());
+        }
+
+        @DisplayName("CSV File Source Case - Phone Number Should Match the Required Format")
+        @ParameterizedTest
+        @CsvFileSource(resources = "/data.csv")
+        void shouldTextPhoneNumberFormatUsingCSVFileSource(String phoneNumber) {
+            contactManager.addContact("Aisha", "Moshood", phoneNumber);
+            assertFalse(contactManager.getAllContacts().isEmpty());
+            assertEquals(1, contactManager.getAllContacts().size());
+        }
     }
 
     @DisplayName("Method Source Case- Phone Number Should Match the Required Format")
@@ -144,25 +167,7 @@ class ContactManagerTest {
         assertEquals(1, contactManager.getAllContacts().size());
     }
 
-    private static List<String> phoneNumberList(){
+    private List<String> phoneNumberList(){
         return Arrays.asList("+809876543", "+809876543", "+809876543");
-    }
-
-    @DisplayName("CSV Source Case - Phone Number Should Match the Required Format")
-    @ParameterizedTest
-    @CsvSource({"+809876543", "+809876543", "+809876543"})
-    void shouldTextPhoneNumberFormatUsingCSVSource(String phoneNumber) {
-        contactManager.addContact("Aisha", "Moshood", phoneNumber);
-        assertFalse(contactManager.getAllContacts().isEmpty());
-        assertEquals(1, contactManager.getAllContacts().size());
-    }
-
-    @DisplayName("CSV File Source Case - Phone Number Should Match the Required Format")
-    @ParameterizedTest
-    @CsvFileSource(resources = "/data.csv")
-    void shouldTextPhoneNumberFormatUsingCSVFileSource(String phoneNumber) {
-        contactManager.addContact("Aisha", "Moshood", phoneNumber);
-        assertFalse(contactManager.getAllContacts().isEmpty());
-        assertEquals(1, contactManager.getAllContacts().size());
     }
 }
