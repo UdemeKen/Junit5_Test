@@ -96,4 +96,13 @@ class ContactManagerTest {
                 .findAny()
                 .isPresent());
     }
+
+    @Test
+    @DisplayName("Test Contact Creation On Developer Machine")
+    void shouldTextContactCreationOnDEV() {
+        Assumptions.assumeTrue("DEV".equals(System.getProperty("ENV")));
+        contactManager.addContact("Aisha", "Moshood", "+809876543");
+        Assertions.assertFalse(contactManager.getAllContacts().isEmpty());
+        Assertions.assertEquals(1, contactManager.getAllContacts().size());
+    }
 }
