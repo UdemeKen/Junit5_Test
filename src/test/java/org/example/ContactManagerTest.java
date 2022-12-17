@@ -3,6 +3,18 @@ package org.example;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.condition.EnabledOnOs;
 import org.junit.jupiter.api.condition.OS;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvFileSource;
+import org.junit.jupiter.params.provider.CsvSource;
+import org.junit.jupiter.params.provider.MethodSource;
+import org.junit.jupiter.params.provider.ValueSource;
+
+import java.lang.reflect.Array;
+import java.util.Arrays;
+import java.util.List;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class ContactManagerTest {
@@ -23,8 +35,8 @@ class ContactManagerTest {
     @DisplayName("Should Create Contact")
     void shouldCreateContact() {
         contactManager.addContact("Aisha", "Moshood", "+809876543");
-        Assertions.assertFalse(contactManager.getAllContacts().isEmpty());
-        Assertions.assertEquals(1, contactManager.getAllContacts().size());
+        assertFalse(contactManager.getAllContacts().isEmpty());
+        assertEquals(1, contactManager.getAllContacts().size());
         Assertions.assertTrue(contactManager.getAllContacts().stream()
                 .filter(contact -> contact.getFirstName().equals("Aisha") &&
                         contact.getLastName().equals("Moshood") &&
@@ -72,8 +84,8 @@ class ContactManagerTest {
     @EnabledOnOs(value = OS.MAC, disabledReason = "Enabled only on Mac OS")
     void shouldCreateContactOnlyOnMac() {
         contactManager.addContact("Aisha", "Moshood", "+809876543");
-        Assertions.assertFalse(contactManager.getAllContacts().isEmpty());
-        Assertions.assertEquals(1, contactManager.getAllContacts().size());
+        assertFalse(contactManager.getAllContacts().isEmpty());
+        assertEquals(1, contactManager.getAllContacts().size());
         Assertions.assertTrue(contactManager.getAllContacts().stream()
                 .filter(contact -> contact.getFirstName().equals("Aisha") &&
                         contact.getLastName().equals("Moshood") &&
@@ -87,8 +99,8 @@ class ContactManagerTest {
     @EnabledOnOs(value = OS.WINDOWS, disabledReason = "Disabled on Windows OS")
     void shouldCreateContactOnlyOnWindows() {
         contactManager.addContact("Aisha", "Moshood", "+809876543");
-        Assertions.assertFalse(contactManager.getAllContacts().isEmpty());
-        Assertions.assertEquals(1, contactManager.getAllContacts().size());
+        assertFalse(contactManager.getAllContacts().isEmpty());
+        assertEquals(1, contactManager.getAllContacts().size());
         Assertions.assertTrue(contactManager.getAllContacts().stream()
                 .filter(contact -> contact.getFirstName().equals("Aisha") &&
                         contact.getLastName().equals("Moshood") &&
@@ -102,15 +114,55 @@ class ContactManagerTest {
     void shouldTextContactCreationOnDEV() {
         Assumptions.assumeTrue("DEV".equals(System.getProperty("ENV")));
         contactManager.addContact("Aisha", "Moshood", "+809876543");
-        Assertions.assertFalse(contactManager.getAllContacts().isEmpty());
-        Assertions.assertEquals(1, contactManager.getAllContacts().size());
+        assertFalse(contactManager.getAllContacts().isEmpty());
+        assertEquals(1, contactManager.getAllContacts().size());
     }
 
     @DisplayName("Repeat Contact Creation Test 5 Times")
     @RepeatedTest(value = 5, name = "Repeating Contact Creation Text {currentRepetition} of {totalRepetitions}")
     void shouldTextContactCreationRepeatedly() {
         contactManager.addContact("Aisha", "Moshood", "+809876543");
-        Assertions.assertFalse(contactManager.getAllContacts().isEmpty());
-        Assertions.assertEquals(1, contactManager.getAllContacts().size());
+        assertFalse(contactManager.getAllContacts().isEmpty());
+        assertEquals(1, contactManager.getAllContacts().size());
+    }
+
+    @DisplayName("Repeat Contact Creation Test 5 Times")
+    @ParameterizedTest
+    @ValueSource(strings = {"+809876543", "+809876543", "+809876543"})
+    void shouldTextContactCreationUsingValueSource(String phoneNumber) {
+        contactManager.addContact("Aisha", "Moshood", phoneNumber);
+        assertFalse(contactManager.getAllContacts().isEmpty());
+        assertEquals(1, contactManager.getAllContacts().size());
+    }
+
+    @DisplayName("Method Source Case- Phone Number Should Match the Required Format")
+    @ParameterizedTest
+    @MethodSource("phoneNumberList")
+    void shouldTextPhoneNumberFormatUsingMethodSource(String phoneNumber) {
+        contactManager.addContact("Aisha", "Moshood", phoneNumber);
+        assertFalse(contactManager.getAllContacts().isEmpty());
+        assertEquals(1, contactManager.getAllContacts().size());
+    }
+
+    private static List<String> phoneNumberList(){
+        return Arrays.asList("+809876543", "+809876543", "+809876543");
+    }
+
+    @DisplayName("CSV Source Case - Phone Number Should Match the Required Format")
+    @ParameterizedTest
+    @CsvSource({"+809876543", "+809876543", "+809876543"})
+    void shouldTextPhoneNumberFormatUsingCSVSource(String phoneNumber) {
+        contactManager.addContact("Aisha", "Moshood", phoneNumber);
+        assertFalse(contactManager.getAllContacts().isEmpty());
+        assertEquals(1, contactManager.getAllContacts().size());
+    }
+
+    @DisplayName("CSV File Source Case - Phone Number Should Match the Required Format")
+    @ParameterizedTest
+    @CsvFileSource(resources = "/data.csv")
+    void shouldTextPhoneNumberFormatUsingCSVFileSource(String phoneNumber) {
+        contactManager.addContact("Aisha", "Moshood", phoneNumber);
+        assertFalse(contactManager.getAllContacts().isEmpty());
+        assertEquals(1, contactManager.getAllContacts().size());
     }
 }
